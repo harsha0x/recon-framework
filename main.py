@@ -1,6 +1,5 @@
 import sys
-from header_audit import HeaderAudit
-from sensitive_file_check import SensitiveFileCheck
+from plugin_discovery import plugin_discovery
 
 
 def print_report(result):
@@ -21,15 +20,13 @@ def main():
 
     target = sys.argv[1]
 
-    plugins = [
-        HeaderAudit(target, timeout=10),
-        SensitiveFileCheck(target, timeout=10),
-    ]
+    plugin_classes = plugin_discovery("plugins")
 
     print(f"Scanning {target} ...")
 
-    for plugin in plugins:
-        result = plugin.execute()
+    for plugin_cls in plugin_classes:
+        instance = plugin_cls(target)
+        result = instance.execute()
         print_report(result)
 
 
